@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+*{
+   box-sizing: border-box;
+}
+body{
+   background-color:#f8fafc;
+}
+.data-table{
+     box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; 
+}
+.card{
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;  
+}
+.btn{
+   box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+.data-table th,.data-table td { 
+    min-width:110px;
+}
+.data-table th:nth-child(1),.data-table td:nth-child(1){
+   min-width:180px;
+}
+.data-table th{
+   padding:0.95em 0.20em 0.95em 0.20em;  
+}
+.data-table td{
+   padding:0.50em 0.30em 0.50em 0.30em; 
+}
