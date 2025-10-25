@@ -24,20 +24,19 @@ function Table() {
                  })
       if(dueDate){
         if(dueDate==="pending"){
-          data=data.filter((item)=>!item.completed)//taking completed:false
+          data=data.filter((item)=>!item.completed).filter((item)=>new Date(item.date)>=new Date())//taking completed:false
         }
         else if (dueDate === "completed") {
          data = data.filter(item => item.completed);//taking completed:true
         }
         else if(dueDate==="overDue"){
-          data=data.filter((item)=>!item.completed).filter((item)=>item.date<today)
+          data=data.filter((item)=>!item.completed).filter((item)=>new Date(item.date)<new Date())
         }
         else if(dueDate==="dueSoonFirst"){
           data=data.filter((item)=>!item.completed).filter((item)=>item.date>=today).sort((a,b)=>new Date(a.date)-new Date(b.date))
         }
         else if(dueDate==="dueLateFirst"){
           data=data.filter((item)=>!item.completed).filter((item)=>item.date>=today).sort((a,b)=>new Date(b.date)-new Date(a.date))
-          console.log(data)
         }
       }
       if(priority){
@@ -72,22 +71,19 @@ function Table() {
    },[trimmedSearchInput.length,dueDate,priority])
 
   function editFunctionality(evt){ 
-    const data=task[evt.currentTarget.id] 
-    setFormData({...data})
-    navigate('/form',{replace:true,state:{mode:"edit",from:"home",id:evt.currentTarget.id}})
+    navigate(`/form/${evt.currentTarget.id}?mode=edit&from=home`,{replace:true})
   }
   function deleteTask(evt){
-    const deleteId=evt.currentTarget.id
-    task.splice(deleteId,1)
-    setTask([...task])
+    const deleteId=Number(evt.currentTarget.id)
+    const data=task.filter((item)=>deleteId!==item.id)
+    setTask([...data])
     if(currentPage>0 && pageData.length==1){
       setCurrentPage(currentPage-1)
       setPageWindowStart(Math.max(0,pageWindowStart-1))
     }
   }
   function goToViewPage(evt){
-  console.log(evt.currentTarget.id)
-    navigate('/view',{replace: true,state:{id:evt.currentTarget.id}})
+    navigate(`/view/${evt.currentTarget.id}`,{replace: true})
   }
   function handlePrev(){
     if(currentPage>0){
@@ -109,10 +105,16 @@ function Table() {
     }
   }
   function handleComplete(evt){
-    const id=evt.currentTarget.id
-    const updatedTask=[...task]
-     updatedTask[id]={...updatedTask[id],completed:!updatedTask[id].completed}
-     setTask(updatedTask)
+    const completedDataId=Number(evt.currentTarget.id)
+    const data=task.map((item)=>{
+      if(completedDataId===item.id){
+        return {...item,completed:!item.completed}
+      }
+      else{
+        return item
+      }
+    })
+     setTask(data)
   }
  
   return (
@@ -139,10 +141,10 @@ function Table() {
             pageData.length?pageData.map((item,i)=>{
             return(<tr key={i} className="border border-slate-200">
             <td className={`whitespace-normal flex gap-2 ml-4 ${item.completed?"line-through":""}`} >
-              <input type="checkbox" id={startIndex+i} checked={item.completed} onChange={handleComplete}/>
+              <input type="checkbox" id={item.id} checked={item.completed} onChange={handleComplete}/>
               <p>{item.title}</p>             
             </td>
-            <td className="whitespace-nowrap text-center">{item.date}</td>
+            <td className="whitespace-nowrap text-center">{new Date(item.date).toLocaleDateString("en-IN")}</td>
             {
               <td className="text-center">
                 <button style={{
@@ -155,11 +157,11 @@ function Table() {
             }
             <td>
                <div className="w-full h-full flex flex-row justify-center">
-                <FaRegEdit className="size-6 inline text-blue-400" id={startIndex+i} onClick={editFunctionality}/>
-                <MdDelete className="size-[26.5px] inline text-red-500" id={startIndex+i} onClick={deleteTask}/>
+                <FaRegEdit className="size-6 inline text-blue-400" id={item.id} onClick={editFunctionality}/>
+                <MdDelete className="size-[26.5px] inline text-red-500" id={item.id} onClick={deleteTask}/>
               </div>
             </td>
-            <td className="text-center"><button className="bg-blue-400 text-white  rounded-md py-1 px-3 w-fit" id={startIndex+i} onClick={goToViewPage}>View</button></td>
+            <td className="text-center"><button className="bg-blue-400 text-white  rounded-md py-1 px-3 w-fit" id={item.id} onClick={goToViewPage}>View</button></td>
           </tr>)
           }):(<tr><td colSpan="4" className="text-center">No tasks found</td></tr>)        
           }         

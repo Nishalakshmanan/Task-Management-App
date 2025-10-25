@@ -1,26 +1,39 @@
-import { useState,useContext,useEffect } from "react";
+import { useContext,useEffect } from "react";
 import { taskContext } from "../App";
-import { useNavigate,useLocation} from "react-router-dom";
+import { useLocation, useParams,useNavigate } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 function TaskForm() {
   //useLocation returns the Location object which is the second argument of the navigation
+  const {id}=useParams()
+  const locationSearch=useLocation().search
+  const params=new URLSearchParams(locationSearch)
+  const mode=params.get("mode")
+  const from=params.get("from")
   const navigate=useNavigate()
-  const {mode,from,id}=useLocation().state
   const {task,setTask,formData,setFormData}=useContext(taskContext)
   useEffect(()=>{
      if(mode==="create"){
       setFormData({ title: "", desc: "", date: "",priority:"",priorityVal: "",completed:false })
      }
+     else if(mode==="edit"){
+      const editDataId = Number(id); 
+       const data=task.filter((item)=>editDataId==item.id)
+      setFormData(...data)
+     }
   },[])
   function addForm(evt){
     evt.preventDefault()
     if(mode==="create"){
-      setTask([...task,formData])
+      const id=Date.now()
+      setTask([...task,{...formData,id}])
       setFormData({ title: "", desc: "", date: "",priority:"",priorityVal: "",completed:false })
       navigate("/",{replace:true})
     }
     else if(from==="view"){
-       const editedTask=task.map((item,i)=>{
-         if(i==id){
+      const editId=Number(id)
+       const editedTask=task.map((item)=>{
+         if(editId===item.id){
           return formData
          }
          else{
@@ -29,11 +42,12 @@ function TaskForm() {
        })
        setTask(editedTask)
        setFormData({ title: "", desc: "", date: "",priority:"",priorityVal: "",completed:false})
-       navigate("/view",{replace:true,state:{id:id}})
+       navigate(`/view/${id}`,{replace:true})
     }
     else{
-       const editedTask=task.map((item,i)=>{
-         if(i==id){
+        const editId=Number(id)
+        const editedTask=task.map((item)=>{
+         if(editId===item.id){
           return formData
          }
          else{
@@ -54,7 +68,7 @@ function TaskForm() {
     //view to edit
     else if(from==="view"){
        setFormData({ title: "", desc: "", date: "",priority:"",priorityVal: "",completed:false})
-       navigate("/view",{replace:true,state:{id:id}})
+       navigate(`/view/${id}`,{replace:true})
     }
     //table to edit
     else{
@@ -91,14 +105,21 @@ function TaskForm() {
             <label htmlFor="duedate" className="font-semibold">
               Due Date:{" "}
             </label>
-            <input
-              type="date"
-              value={formData.date}
-              onChange={(evt)=>setFormData({...formData,date:evt.target.value})}
-              id="duedate"
-              className="px-3 rounded-md"
-              required
-            ></input>
+            <DatePicker
+             id="duedate"
+             minDate={new Date()}
+             disabledKeyboardNavigation
+             selected={formData.date}
+             onChange={(date)=>setFormData({...formData,date})}
+             customInput={<input readOnly />}
+             placeholderText="dd/mm/yyyy"
+             dateFormat="dd/MM/yyyy"
+             showMonthDropdown    // <-- show month dropdown
+             showYearDropdown    // <-- show year dropdown
+             dropdownMode="select" 
+             className="px-4 py-1.5 border-2 border-gray-300 rounded-lg flex-grow focus:outline-none"
+             required
+            />
           </div>
           <div className="flex gap-1 sm:gap-2 items-start flex-wrap">
             <p className="whitespace-nowrap">Priority Status:</p>

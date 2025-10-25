@@ -7,7 +7,7 @@ import ViewPage from "./pages/ViewPage.jsx";
 const taskContext=createContext()
 function App() { 
    
-   const [formData,setFormData]=useState({title:"",desc:"",date:"",priority:"",priorityVal:"",completed:false}) 
+   const [formData,setFormData]=useState({title:"",desc:"",date:null,priority:"",priorityVal:"",completed:false}) 
    //formstate is used to track whether we should show or hide create new task btn 
    const[task,setTask]=useState(localStorage.getItem("Task")?JSON.parse(localStorage.getItem("Task")):[])
    useEffect(()=>{
@@ -23,8 +23,9 @@ function App() {
     <BrowserRouter>
     <Routes>
       <Route path='/' element={<Home></Home>}></Route>
-      <Route path='/form' element={<CreateTask></CreateTask>}></Route>
-      <Route path='/view' element={<ViewPage></ViewPage>}></Route>
+      {/*id parameter is optional*/}
+      <Route path='/form/:id?' element={<CreateTask></CreateTask>}></Route>
+      <Route path='/view/:id' element={<ViewPage></ViewPage>}></Route>
     </Routes>
    </BrowserRouter>
     

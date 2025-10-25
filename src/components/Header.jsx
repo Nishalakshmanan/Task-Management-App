@@ -1,9 +1,9 @@
-import { useNavigate,useLocation} from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import { useContext } from "react";
 function Header({create}) {
   const navigate=useNavigate()
   function goToCreateForm(){
-    navigate('/form',{replace: true,state:{mode:"create"}})
+    navigate('/form?mode=create',{replace: true})
   }
   return (
     <div className="sticky top-0">
