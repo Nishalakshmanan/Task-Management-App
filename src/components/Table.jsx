@@ -24,13 +24,13 @@ function Table() {
                  })
       if(dueDate){
         if(dueDate==="pending"){
-          data=data.filter((item)=>!item.completed).filter((item)=>new Date(item.date)>=new Date())//taking completed:false
+          data=data.filter((item)=>!item.completed).filter((item)=>new Date(item.date)>=today)//taking completed:false
         }
         else if (dueDate === "completed") {
          data = data.filter(item => item.completed);//taking completed:true
         }
         else if(dueDate==="overDue"){
-          data=data.filter((item)=>!item.completed).filter((item)=>new Date(item.date)<new Date())
+          data=data.filter((item)=>!item.completed).filter((item)=>new Date(item.date)<today)
         }
         else if(dueDate==="dueSoonFirst"){
           data=data.filter((item)=>!item.completed).filter((item)=>item.date>=today).sort((a,b)=>new Date(a.date)-new Date(b.date))
